@@ -1,5 +1,5 @@
-// ----- Abstract class User -----
-abstract class User {
+create database if not exists finalexam1;
+create table User {
     protected int id;
     protected String fullName;
     protected String email;
