@@ -1,0 +1,193 @@
+// ----- Abstract class User -----
+abstract class User {
+    protected int id;
+    protected String fullName;
+    protected String email;
+    protected String password;
+    protected String role;
+
+    public User(int id, String fullName, String email, String password, String role) {
+        this.id = id;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public abstract void displayInfo();
+}
+
+// ----- Manager -----
+class Manager extends User {
+    private int expInYear;
+    private int projectId;
+
+    public Manager(int id, String fullName, String email, String password, int expInYear, int projectId) {
+        super(id, fullName, email, password, "manager");
+        this.expInYear = expInYear;
+        this.projectId = projectId;
+    }
+
+    public int getProjectId() {
+        return projectId;
+    }
+
+    @Override
+    public void displayInfo() {
+        System.out.printf("| %-3d | %-15s | %-20s | %-5d | Project: %-3d |\n",
+                id, fullName, email, expInYear, projectId);
+    }
+}
+
+// ----- Employee -----
+class Employee extends User {
+    private String proSkill;
+    private int projectId;
+
+    public Employee(int id, String fullName, String email, String password, String proSkill, int projectId) {
+        super(id, fullName, email, password, "employee");
+        this.proSkill = proSkill;
+        this.projectId = projectId;
+    }
+
+    public int getProjectId() {
+        return projectId;
+    }
+
+    @Override
+    public void displayInfo() {
+        System.out.printf("| %-3d | %-15s | %-20s | %-10s | Project: %-3d |\n",
+                id, fullName, email, proSkill, projectId);
+    }
+}
+
+// ----- Main Program -----
+public class FinalExam4 {
+    private static ArrayList<User> users = new ArrayList<>();
+    private static Scanner sc = new Scanner(System.in);
+
+    // validate email
+    private static boolean isValidEmail(String email) {
+        return Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email);
+    }
+
+    // validate password
+    private static boolean isValidPassword(String password) {
+        return password.length() >= 6 && password.length() <= 12;
+    }
+
+    // function 1: create sample data
+    private static void initData() {
+        users.add(new Manager(1, "Nguyen Van A", "a@company.com", "123456", 5, 101));
+        users.add(new Manager(2, "Tran Van B", "b@company.com", "1234567", 3, 102));
+        users.add(new Employee(3, "Le Thi C", "c@company.com", "abcdef", "Java", 101));
+        users.add(new Employee(4, "Pham Van D", "d@company.com", "abcdefg", "SQL", 101));
+        users.add(new Employee(5, "Hoang Van E", "e@company.com", "pass123", "Tester", 102));
+    }
+
+    // function 2: find employees by projectId
+    private static void findEmployeesByProject(int projectId) {
+        System.out.println("== Employees in project " + projectId + " ==");
+        for (User u : users) {
+            if (u instanceof Employee) {
+                Employee e = (Employee) u;
+                if (e.getProjectId() == projectId) {
+                    e.displayInfo();
+                }
+            }
+        }
+    }
+
+    // function 3: find managers by projectId
+    private static void findManagersByProject(int projectId) {
+        System.out.println("== Managers of project " + projectId + " ==");
+        for (User u : users) {
+            if (u instanceof Manager) {
+                Manager m = (Manager) u;
+                if (m.getProjectId() == projectId) {
+                    m.displayInfo();
+                }
+            }
+        }
+    }
+
+    // function 4: login
+    private static void loginManager(String email, String password) {
+        if (!isValidEmail(email)) {
+            System.out.println("Email không hợp lệ!");
+            return;
+        }
+        if (!isValidPassword(password)) {
+            System.out.println("Password phải từ 6-12 ký tự!");
+            return;
+        }
+        for (User u : users) {
+            if (u instanceof Manager && u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                System.out.println("Đăng nhập thành công! Xin chào " + u.getFullName());
+                return;
+            }
+        }
+        System.out.println("Sai email hoặc password hoặc không phải Manager!");
+    }
+
+    public static void main(String[] args) {
+        initData();
+
+        while (true) {
+            System.out.println("\n===== MENU =====");
+            System.out.println("1. Tìm Employee theo projectId");
+            System.out.println("2. Tìm Manager theo projectId");
+            System.out.println("3. Login Manager");
+            System.out.println("0. Thoát");
+            System.out.print("Chọn: ");
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Nhập projectId: ");
+                    int p1 = sc.nextInt();
+                    findEmployeesByProject(p1);
+                    break;
+                case 2:
+                    System.out.print("Nhập projectId: ");
+                    int p2 = sc.nextInt();
+                    findManagersByProject(p2);
+                    break;
+                case 3:
+                    System.out.print("Nhập email: ");
+                    String email = sc.nextLine();
+                    System.out.print("Nhập password: ");
+                    String pass = sc.nextLine();
+                    loginManager(email, pass);
+                    break;
+                case 0:
+                    System.exit(0);
+                default:
+                    System.out.println("Sai lựa chọn!");
+            }
+        }
+    }
+}
+
+
